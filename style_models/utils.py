@@ -14,7 +14,10 @@ def load_image(filename: str) -> Image:
 
 
 def convert_from_tensor(data: torch.Tensor) -> Image:
-    img = data.clone().clamp(0, 255).numpy()
+
+    data *= torch.Tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
+    data += torch.Tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
+    img = (data * 255).clone().clamp(0, 255).numpy()
     img = img.transpose(1, 2, 0).astype("uint8")
     return Image.fromarray(img)
 
