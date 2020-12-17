@@ -1,3 +1,4 @@
+import logging
 import torch
 from torch import nn
 from torchvision import transforms
@@ -11,6 +12,8 @@ TO_TENSOR = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
+
+logger = logging.getLogger("styling")
 
 
 def stylize(content_image: Image, style_model: nn.Module) -> Image:
@@ -28,10 +31,13 @@ def stylize(content_image: Image, style_model: nn.Module) -> Image:
 
 def stylize_image(file, style: str) -> Image:
 
+    logger.info("Start to load image")
     content_image = load_image(file)
     orig_size = content_image.size
+    logger.info(f"Image is loaded, image size {orig_size}, start loading model: {style}.pth")
     style_model = load_model(style)
-
+    logger.info(f"Model is loaded, start stylization with style {style}")
     img = stylize(content_image, style_model)
+    logger.info("Stylization is completed")
     img = img.resize(orig_size)
     return img
