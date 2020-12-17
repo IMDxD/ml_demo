@@ -1,0 +1,40 @@
+<!doctype html>
+
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+
+        <title>Look on your photo through the art</title>
+    </head>
+    <body class="bg-light">
+
+
+        <div class="container" style="max-width: 600px;">
+            <main>
+                <div class="py-5">
+                    <h4 class="mb-3 text-uppercase">Load an image and get a result</h4>
+                    <form action="/stylize" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <input class="form-control" type="file" name="file">
+                        </div>
+                        <div class="mb-3">
+                            <input id="sunset-submit" type="submit" name="style" value="sunset"
+                                   style="background-image: url('static/sunset.jfif'); background-size:100% 100%; height:128px; width:128px">
+                            <input id="scream-submit" type="submit" name="style" value="scream"
+                                   style="background-image: url('static/scream.jfif'); background-size:100% 100%; height:128px; width:128px">
+                            <input id="abstract-submit" type="submit" name="style" value="abstract"
+                                   style="background-image: url('static/abstract.jfif'); background-size:100% 100%; height:128px; width:128px">
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </body>
+
+</html>

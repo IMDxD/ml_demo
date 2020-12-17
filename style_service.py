@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, request, send_file
+from flask import Flask, render_template, request, send_file
 
 from stylize import stylize_image
 
@@ -12,9 +12,15 @@ if not os.path.exists(STYLE_MODEL_PATH):
     os.makedirs(STYLE_MODEL_PATH)
 
 
-@app.route("/<style>", methods=["GET", "POST"])
-def stylize(style):
-    file = request.files['file']
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+
+@app.route("/stylize", methods=["POST"])
+def stylize():
+    style = request.values["style"]
+    file = request.files["file"]
     file.save(file.filename)
     img = stylize_image(file.filename, style)
     os.remove(file.filename)
