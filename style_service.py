@@ -26,6 +26,3 @@ def stylize():
     os.remove(file.filename)
     img.save("tmp.jpg")
     return send_file("tmp.jpg", attachment_filename="styled.jpg")
-
-
-app.run("127.0.0.1", 5000)
