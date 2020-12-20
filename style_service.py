@@ -1,5 +1,6 @@
 import os
 import logging
+import tempfile
 
 from flask import Flask, render_template, request, send_file
 
@@ -11,12 +12,16 @@ STYLE_MODEL_PATH = "styles"
 logger = logging.getLogger("styling")
 logger.setLevel(logging.INFO)
 formater = logging.Formatter('%(levelname)s: [%(asctime)s] %(message)s')
-main_handler = logging.FileHandler("logs.log")
+main_handler = logging.StreamHandler()
 main_handler.setFormatter(formater)
 logger.addHandler(main_handler)
 
 if not os.path.exists(STYLE_MODEL_PATH):
     os.makedirs(STYLE_MODEL_PATH)
+
+
+def get_path(file_name):
+    return os.path.join(tempfile.gettempdir(), file_name)
 
 
 @app.route("/")
@@ -28,12 +33,16 @@ def index():
 def stylize():
     style = request.values["style"]
     file = request.files["file"]
-    file.save(file.filename)
-    logger.info(f"Got file {file.filename} and style {style}")
-    img = stylize_image(file.filename, style)
-    os.remove(file.filename)
-    img.save("tmp.jpg")
-    return send_file("tmp.jpg", attachment_filename="stylized.jpg")
+    logger.info(f"Got file {file} and style {style}")
+    filepath = get_path(file.filename)
+    file.save(filepath)
+    logger.info(f"File saved to {filepath}")
+    img = stylize_image(filepath, style)
+    os.remove(filepath)
+    savedpath = get_path("tmp.jpg")
+    img.save(savedpath)
+    logger.info(f"Image saved to {savedpath}")
+    return send_file(savedpath, attachment_filename="stylized.jpg")
 
 # @app.route("/stylize/<string:style>", methods=["GET", "POST"])
 # def stylize(style):
@@ -46,7 +55,7 @@ def stylize():
 #     # img.save("tmp.jpg")
 #     # return style, 200, {'Content-Type': 'text/plain'}
 #     return send_file("tmp.jpg", mimetype='image/jpg')
-
-
-# if __name__ == "__main__":
-#     app.run(host="127.0.0.1", port=5000, debug=True)
+#
+#
+if __name__ == "__main__":
+    app.run(host="127.0.0.1", port=5000, debug=True)
