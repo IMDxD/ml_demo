@@ -32,5 +32,9 @@ def stylize():
     logger.info("Got file")
     img = stylize_image(file.filename, style)
     os.remove(file.filename)
-    img.save("tmp.jpg")
-    return send_file("tmp.jpg", attachment_filename="styled.jpg")
+    img.save("static/tmp.jpg")
+    return render_template("stylize.html")
+
+
+if __name__ == '__main__':
+    app.run("127.0.0.1", 5000)
