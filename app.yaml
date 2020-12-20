@@ -1,6 +1,10 @@
 runtime: python38
+entrypoint: FLASK_APP=main.py flask run --host 127.0.0.1 --port $PORT
+instance_class: F4_1G
 
 handlers:
+- url: /
+  script: auto
   # This configures Google App Engine to serve the files in the app's static
   # directory.
 - url: /static
