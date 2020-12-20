@@ -1,40 +1,98 @@
-<!doctype html>
-
+<!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <title>Art</title>
+</head>
 
-        <!-- Bootstrap CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+<body class="bg-light">
+    <main class="content container" style="max-width: 600px">
+        <div class="py-5">
+            <header class="mb-3 text-uppercase">1. Load an image:</header>
+            <form action="/stylize" method="post" enctype="multipart/form-data"> <!-- action="/stylize" -->
+                <div class="mb-3">
+                    <input id="files" class="form-control" accept="image/*" type="file" name="file" />
+                    <img id="image" />
+                    <script type="text/javascript">
+                        document.getElementById("files").onchange = function () {
+                            var reader = new FileReader();
 
+                            reader.onload = function (e) {
+                                // get loaded data and render thumbnail:
+                                document.getElementById("image").src = e.target.result;
+                            };
 
-        <title>Look on your photo through the art</title>
-    </head>
-    <body class="bg-light">
-
-
-        <div class="container" style="max-width: 600px;">
-            <main>
-                <div class="py-5">
-                    <h4 class="mb-3 text-uppercase">Load an image and get a result</h4>
-                    <form action="/stylize" method="post" enctype="multipart/form-data">
-                        <div class="mb-3">
-                            <input class="form-control" type="file" name="file">
-                        </div>
-                        <div class="mb-3">
-                            <input id="sunset-submit" type="submit" name="style" value="sunset"
-                                   style="background-image: url('static/sunset.jfif'); background-size:100% 100%; height:128px; width:128px">
-                            <input id="scream-submit" type="submit" name="style" value="scream"
-                                   style="background-image: url('static/scream.jfif'); background-size:100% 100%; height:128px; width:128px">
-                            <input id="abstract-submit" type="submit" name="style" value="abstract"
-                                   style="background-image: url('static/abstract.jpg'); background-size:100% 100%; height:128px; width:128px">
-                        </div>
-                    </form>
+                            // read the image file as a data URL:
+                            reader.readAsDataURL(this.files[0]);
+                        };
+                    </script>
                 </div>
-            </main>
-        </div>
-    </body>
+                <header class="mb-3 text-uppercase">2. Pick a style:</header>
+                <div class="mb-3">
+                    <input id="sunset-submit" type="submit" name="style" value="sunset" style="background-image: url('static/icons/sunset.jfif'); background-size:100% 100%; height:128px; width:128px; color: transparent">
+                    <input id="scream-submit" type="submit" name="style" value="scream" style="background-image: url('static/icons/scream.jfif'); background-size:100% 100%; height:128px; width:128px; color: transparent">
+                    <input id="abstract-submit" type="submit" name="style" value="abstract" style="background-image: url('static/icons/abstract.jpg'); background-size:100% 100%; height:128px; width:128px; color: transparent">
+                </div>
+            <header class="mb-3 text-uppercase">3. Enjoy the result!</header>
+            <!-- <form method="get">
+	            <img src="{# {{url_for('stylize', filename=stylized_image) }} #}">
+	            <img src="stylized_image" />
+        	</form> -->
+        	<img id="output" />
+        	<script>
+			// Only run what comes next *after* the page has loaded
+			addEventListener("DOMContentLoaded", function() {
+			  // Grab all of the elements with a class of command
+			  // (which all of the buttons we just created have)
+			  var styles = document.getElementsByName("style");
+			  var filename = document.getElementById("image").src;
+			  for (var i=0; i<styles.length; i++) {
+			    var style = styles[i];
+			    // For each style, listen for the "click" event
+			    style.addEventListener("click", function(e) {
+			      // When a click happens, stop the style
+			      // from submitting our form (if we have one)
+			      // e.preventDefault();
 
+			      var clickedStyle = e.target;
+			      var command = clickedStyle.value;
+
+			      // Now we need to send the data to our server
+			      // without reloading the page - this is the domain of
+			      // AJAX (Asynchronous JavaScript And XML)
+			      // We will create a new request object
+			      // and set up a handler for the response
+			      var request = new XMLHttpRequest();
+			      request.onload = function() {
+			          // We could do more interesting things with the response
+			          // or we could ignore it entirely:
+			          // alert(request.responseText);
+			          var reader = new FileReader();
+
+                      reader.onload = function (e) {
+                          // get loaded data and render thumbnail:
+                          document.getElementById("output").src = e.target.result;
+                      };
+
+                      // read the image file as a data URL:
+                      reader.readAsDataURL(this.files[0]);
+			      };
+			      // We point the request at the appropriate command
+			      request.open("POST", "/stylize/" + command, true);
+			      // and then we send it off
+			      request.send();
+			    });
+			  }
+			}, true);
+			</script>
+            </form>
+        </div>
+    </main>
+    <footer class="footer">
+        MADE by <a href="https://github.com/IMDxD">Anton Nesterenko</a> & <a href="https://github.com/Illumaria">Dmitry Astankov</a>
+    </footer>
+</body>
 </html>

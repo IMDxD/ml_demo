@@ -29,8 +29,24 @@ def stylize():
     style = request.values["style"]
     file = request.files["file"]
     file.save(file.filename)
-    logger.info("Got file")
+    logger.info(f"Got file {file.filename} and style {style}")
     img = stylize_image(file.filename, style)
     os.remove(file.filename)
     img.save("tmp.jpg")
-    return send_file("tmp.jpg", attachment_filename="styled.jpg")
+    return send_file("tmp.jpg", attachment_filename="stylized.jpg")
+
+# @app.route("/stylize/<string:style>", methods=["GET", "POST"])
+# def stylize(style):
+#     r = request
+#     # logger.info(f"In stylize with style {style} and filename {filename}")
+#     # file = request.files["file"]
+#     # file.save(filename)
+#     # logger.info(f"Got file {file.filename} and style {style}")
+#     # img = stylize_image(filename, style)
+#     # img.save("tmp.jpg")
+#     # return style, 200, {'Content-Type': 'text/plain'}
+#     return send_file("tmp.jpg", mimetype='image/jpg')
+
+
+# if __name__ == "__main__":
+#     app.run("127.0.0.1", 5000)
