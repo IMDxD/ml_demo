@@ -22,7 +22,7 @@ if not os.path.exists(STYLE_MODEL_PATH):
 
 
 @app.route("/")
-def index() -> None:
+def index() -> Response:
     """
     Main page of service
     :return: rendered page
