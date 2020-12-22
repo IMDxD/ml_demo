@@ -1,8 +1,17 @@
+"""
+NN model and blocks
+"""
+from typing import Union
+
+import torch
 from torch import nn
 from torch.nn import functional
 
 
 class TransformerNet(nn.Module):
+    """
+    Model for style transfer
+    """
     def __init__(self):
         super(TransformerNet, self).__init__()
         # Initial convolution layers
@@ -27,7 +36,12 @@ class TransformerNet(nn.Module):
         # Non-linearities
         self.relu = nn.ReLU()
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Converting tensor by model
+        :param x: input tensor
+        :return: converted tensor
+        """
         y = self.relu(self.in1(self.conv1(x)))
         y = self.relu(self.in2(self.conv2(y)))
         y = self.relu(self.in3(self.conv3(y)))
@@ -43,13 +57,21 @@ class TransformerNet(nn.Module):
 
 
 class ConvLayer(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size, stride):
+    """
+    Convolutional block with reflection by padding
+    """
+    def __init__(self, in_channels: int, out_channels: int, kernel_size: int, stride: int):
         super(ConvLayer, self).__init__()
         reflection_padding = kernel_size // 2
         self.reflection_pad = nn.ReflectionPad2d(reflection_padding)
         self.conv2d = nn.Conv2d(in_channels, out_channels, kernel_size, stride)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Converting tensor by block
+        :param x: input tensor
+        :return: converted tensor
+        """
         out = self.reflection_pad(x)
         out = self.conv2d(out)
         return out
@@ -61,7 +83,7 @@ class ResidualBlock(nn.Module):
     recommended architecture: http://torch.ch/blog/2016/02/04/resnets.html
     """
 
-    def __init__(self, channels):
+    def __init__(self, channels: int):
         super(ResidualBlock, self).__init__()
         self.conv1 = ConvLayer(channels, channels, kernel_size=3, stride=1)
         self.in1 = nn.InstanceNorm2d(channels, affine=True)
@@ -69,7 +91,12 @@ class ResidualBlock(nn.Module):
         self.in2 = nn.InstanceNorm2d(channels, affine=True)
         self.relu = nn.ReLU()
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Converting tensor by block
+        :param x: input tensor
+        :return: converted tensor
+        """
         residual = x
         out = self.relu(self.in1(self.conv1(x)))
         out = self.in2(self.conv2(out))
@@ -84,14 +111,26 @@ class UpsampleConvLayer(nn.Module):
     ref: http://distill.pub/2016/deconv-checkerboard/
     """
 
-    def __init__(self, in_channels, out_channels, kernel_size, stride, upsample=None):
+    def __init__(
+            self,
+            in_channels: int,
+            out_channels: int,
+            kernel_size: int,
+            stride: int,
+            upsample: Union[int, None] = None
+    ):
         super(UpsampleConvLayer, self).__init__()
         self.upsample = upsample
         reflection_padding = kernel_size // 2
         self.reflection_pad = nn.ReflectionPad2d(reflection_padding)
         self.conv2d = nn.Conv2d(in_channels, out_channels, kernel_size, stride)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Converting tensor by block
+        :param x: input tensor
+        :return: converted tensor
+        """
         x_in = x
         if self.upsample:
             x_in = functional.interpolate(x_in, mode='nearest', scale_factor=self.upsample)

@@ -1,11 +1,15 @@
+"""
+Stylization function
+"""
+
 import logging
+from PIL import Image
+
 import torch
 from torch import nn
 from torchvision import transforms
-from PIL import Image
 
-from style_models import load_image, convert_from_tensor, load_model
-
+from style_models import load_image, convert_from_tensor, convert_to_bytes, load_model
 
 TO_TENSOR = transforms.Compose([
     transforms.Resize(512),
@@ -17,7 +21,12 @@ logger = logging.getLogger("styling")
 
 
 def stylize(content_image: Image, style_model: nn.Module) -> Image:
-
+    """
+    NN stylization
+    :param content_image: Image to stylize
+    :param style_model: model for stylization
+    :return: stylized image
+    """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     content_image = TO_TENSOR(content_image)
     content_image = content_image.unsqueeze(0).to(device)
@@ -29,15 +38,20 @@ def stylize(content_image: Image, style_model: nn.Module) -> Image:
     return img
 
 
-def stylize_image(file, style: str) -> Image:
-
+def stylize_image(file, style: str) -> str:
+    """
+    Preprocessing and stylization of bytes
+    :param file: bytes of image
+    :param style: name of style
+    :return: stylized image as bytes
+    """
     logger.info("Start to load image")
     content_image = load_image(file)
     orig_size = content_image.size
-    logger.info(f"Image is loaded, image size {orig_size}, start loading model: {style}.pth")
+    logger.info("Image is loaded, image size %s, start loading model: %s.pth" % (orig_size, style))
     style_model = load_model(style)
-    logger.info(f"Model is loaded, start stylization with style {style}")
+    logger.info("Model is loaded, start stylization with style %s" % style)
     img = stylize(content_image, style_model)
     logger.info("Stylization is completed")
     img = img.resize(orig_size)
-    return img
+    return convert_to_bytes(img)
