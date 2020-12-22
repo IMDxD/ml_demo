@@ -12,7 +12,7 @@
     <main class="content container" style="max-width: 600px">
         <div class="py-5">
             <header class="mb-3 text-uppercase">1. Load an image:</header>
-            <form enctype="multipart/form-data" id="uploadForm"> <!-- action="/stylize" -->
+            <form enctype="multipart/form-data" id="uploadForm">
                 <div class="mb-3">
                     <input id="files" class="form-control" accept="image/*" type="file" name="file" />
                     <img id="image" />
@@ -37,30 +37,29 @@
                     <input id="scream-submit" type="button" name="style" value="scream" style="background-image: url('static/icons/scream.jfif'); background-size:100% 100%; height:128px; width:128px; color: transparent">
                     <input id="tree-submit" type="button" name="style" value="tree" style="background-image: url('static/icons/tree.jpg'); background-size:100% 100%; height:128px; width:128px; color: transparent">
                 </div>
-            <header class="mb-3 text-uppercase">3. Enjoy the result!</header>
-        	<img id="output" />
-        	<script>
-			addEventListener("DOMContentLoaded", function() {
-
-			  var styles = document.getElementsByName("style");
-			  for (var i=0; i<styles.length; i++) {
-			    var style = styles[i];
-			    style.addEventListener("click", function(e) {
-                  var fd = new FormData(uploadForm);
-			      var clickedStyle = e.target;
-			      fd.append("style", clickedStyle.value);
-                  var text = document.getElementById("image").src
-                  fd.append("content", text);
-                  var request = new XMLHttpRequest();
-                  request.open("POST", "/stylize");
-                  request.onload = function() {
-			          document.getElementById("output").src = request.responseText;
-			      };
-                  request.send(fd);
-			    });
-			  }
-			}, true);
-			</script>
+                <header class="mb-3 text-uppercase">3. Enjoy the result!</header>
+                <img id="output" />
+                <script>
+                    addEventListener("DOMContentLoaded", function() {
+                        var styles = document.getElementsByName("style");
+                        for (var i=0; i<styles.length; i++) {
+                            var style = styles[i];
+                            style.addEventListener("click", function(e) {
+                                var fd = new FormData(uploadForm);
+                                var clickedStyle = e.target;
+                                fd.append("style", clickedStyle.value);
+                                var text = document.getElementById("image").src
+                                fd.append("content", text);
+                                var request = new XMLHttpRequest();
+                                request.open("POST", "/stylize");
+                                request.onload = function() {
+                                    document.getElementById("output").src = request.responseText;
+                                };
+                                request.send(fd);
+                            });
+                        }
+                    }, true);
+                </script>
             </form>
         </div>
     </main>
@@ -68,4 +67,5 @@
         MADE by <a href="https://github.com/IMDxD">Anton Nesterenko</a> & <a href="https://github.com/Illumaria">Dmitry Astankov</a>
     </footer>
 </body>
+
 </html>
