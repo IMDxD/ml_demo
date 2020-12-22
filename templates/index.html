@@ -38,6 +38,7 @@
                     <input id="tree-submit" type="button" name="style" value="tree" style="background-image: url('static/icons/tree.jpg'); background-size:100% 100%; height:128px; width:128px; color: transparent">
                 </div>
                 <header class="mb-3 text-uppercase">3. Enjoy the result!</header>
+                <img id="loading" src="static/icons/loading.gif" style="display: none" />
                 <img id="output" />
                 <script>
                     addEventListener("DOMContentLoaded", function() {
@@ -45,6 +46,8 @@
                         for (var i=0; i<styles.length; i++) {
                             var style = styles[i];
                             style.addEventListener("click", function(e) {
+                                document.getElementById("output").style = "display: none";
+                                document.getElementById("loading").style = "max-width: 128px; max-height: 128px";
                                 var fd = new FormData(uploadForm);
                                 var clickedStyle = e.target;
                                 fd.append("style", clickedStyle.value);
@@ -53,7 +56,9 @@
                                 var request = new XMLHttpRequest();
                                 request.open("POST", "/stylize");
                                 request.onload = function() {
+                                    document.getElementById("loading").style = "display: none";
                                     document.getElementById("output").src = request.responseText;
+                                    document.getElementById("output").style = "";
                                 };
                                 request.send(fd);
                             });
