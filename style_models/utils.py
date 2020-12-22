@@ -22,6 +22,25 @@ def load_image(file: str) -> Image:
     """
     img = Image.open(io.BytesIO(base64.b64decode(file)))
     img = img.convert('RGB')
+    return rotate_by_orient(img)
+
+
+def rotate_by_orient(img: Image) -> Image:
+    """
+    Rotate image by exif orientation tag
+    :param img: original image
+    :return: rotated image
+    """
+    orientation = 0x0112
+
+    exif = dict(img.getexif())
+    if orientation in exif:
+        if exif[orientation] == 3:
+            img = img.rotate(180, expand=True)
+        elif exif[orientation] == 6:
+            img = img.rotate(270, expand=True)
+        elif exif[orientation] == 8:
+            img = img.rotate(90, expand=True)
     return img
 
 
