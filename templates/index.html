@@ -43,10 +43,10 @@
 			addEventListener("DOMContentLoaded", function() {
 
 			  var styles = document.getElementsByName("style");
-			  var fd = new FormData(uploadForm);
 			  for (var i=0; i<styles.length; i++) {
 			    var style = styles[i];
 			    style.addEventListener("click", function(e) {
+                  var fd = new FormData(uploadForm);
 			      var clickedStyle = e.target;
 			      fd.append("style", clickedStyle.value);
                   var text = document.getElementById("image").src
