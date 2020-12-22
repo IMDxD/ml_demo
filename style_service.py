@@ -1,11 +1,10 @@
-import os
 import logging
+import os
 import tempfile
 
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request
 
 from stylize import stylize_image
-
 
 app = Flask(__name__)
 STYLE_MODEL_PATH = "styles"
@@ -32,30 +31,14 @@ def index():
 @app.route("/stylize", methods=["POST"])
 def stylize():
     style = request.values["style"]
-    file = request.files["file"]
-    logger.info(f"Got file {file} and style {style}")
-    filepath = get_path(file.filename)
-    file.save(filepath)
-    logger.info(f"File saved to {filepath}")
-    img = stylize_image(filepath, style)
-    os.remove(filepath)
-    savedpath = get_path("tmp.jpg")
-    img.save(savedpath)
-    logger.info(f"Image saved to {savedpath}")
-    return send_file(savedpath, attachment_filename="stylized.jpg")
+    content = request.values["content"]
+    content = content[content.index(",") + 1:]
+    logger.info(f"Got file and style {style}")
+    img_bytes = stylize_image(content, style)
+    img_bytes = f"data:image/jpeg;base64,{img_bytes}"
+    logger.info(f"Result send back")
+    return img_bytes, 200
 
-# @app.route("/stylize/<string:style>", methods=["GET", "POST"])
-# def stylize(style):
-#     r = request
-#     # logger.info(f"In stylize with style {style} and filename {filename}")
-#     # file = request.files["file"]
-#     # file.save(filename)
-#     # logger.info(f"Got file {file.filename} and style {style}")
-#     # img = stylize_image(filename, style)
-#     # img.save("tmp.jpg")
-#     # return style, 200, {'Content-Type': 'text/plain'}
-#     return send_file("tmp.jpg", mimetype='image/jpg')
-#
-#
+
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000, debug=True)

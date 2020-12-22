@@ -12,7 +12,7 @@
     <main class="content container" style="max-width: 600px">
         <div class="py-5">
             <header class="mb-3 text-uppercase">1. Load an image:</header>
-            <form action="/stylize" method="post" enctype="multipart/form-data"> <!-- action="/stylize" -->
+            <form enctype="multipart/form-data" id="uploadForm"> <!-- action="/stylize" -->
                 <div class="mb-3">
                     <input id="files" class="form-control" accept="image/*" type="file" name="file" />
                     <img id="image" />
@@ -22,7 +22,8 @@
 
                             reader.onload = function (e) {
                                 // get loaded data and render thumbnail:
-                                document.getElementById("image").src = e.target.result;
+                                var content = e.target.result;
+                                document.getElementById("image").src = content;
                             };
 
                             // read the image file as a data URL:
@@ -32,9 +33,9 @@
                 </div>
                 <header class="mb-3 text-uppercase">2. Pick a style:</header>
                 <div class="mb-3">
-                    <input id="sunset-submit" type="submit" name="style" value="sunset" style="background-image: url('static/icons/sunset.jfif'); background-size:100% 100%; height:128px; width:128px; color: transparent">
-                    <input id="scream-submit" type="submit" name="style" value="scream" style="background-image: url('static/icons/scream.jfif'); background-size:100% 100%; height:128px; width:128px; color: transparent">
-                    <input id="abstract-submit" type="submit" name="style" value="abstract" style="background-image: url('static/icons/abstract.jpg'); background-size:100% 100%; height:128px; width:128px; color: transparent">
+                    <input id="sunset-submit" type="button" name="style" value="sunset" style="background-image: url('static/icons/sunset.jfif'); background-size:100% 100%; height:128px; width:128px; color: transparent">
+                    <input id="scream-submit" type="button" name="style" value="scream" style="background-image: url('static/icons/scream.jfif'); background-size:100% 100%; height:128px; width:128px; color: transparent">
+                    <input id="tree-submit" type="button" name="style" value="tree" style="background-image: url('static/icons/tree.jpg'); background-size:100% 100%; height:128px; width:128px; color: transparent">
                 </div>
             <header class="mb-3 text-uppercase">3. Enjoy the result!</header>
             <!-- <form method="get">
@@ -43,47 +44,23 @@
         	</form> -->
         	<img id="output" />
         	<script>
-			// Only run what comes next *after* the page has loaded
 			addEventListener("DOMContentLoaded", function() {
-			  // Grab all of the elements with a class of command
-			  // (which all of the buttons we just created have)
+
 			  var styles = document.getElementsByName("style");
-			  var filename = document.getElementById("image").src;
+			  var fd = new FormData(uploadForm);
 			  for (var i=0; i<styles.length; i++) {
 			    var style = styles[i];
-			    // For each style, listen for the "click" event
 			    style.addEventListener("click", function(e) {
-			      // When a click happens, stop the style
-			      // from submitting our form (if we have one)
-			      // e.preventDefault();
-
 			      var clickedStyle = e.target;
-			      var command = clickedStyle.value;
-
-			      // Now we need to send the data to our server
-			      // without reloading the page - this is the domain of
-			      // AJAX (Asynchronous JavaScript And XML)
-			      // We will create a new request object
-			      // and set up a handler for the response
-			      var request = new XMLHttpRequest();
-			      request.onload = function() {
-			          // We could do more interesting things with the response
-			          // or we could ignore it entirely:
-			          // alert(request.responseText);
-			          var reader = new FileReader();
-
-                      reader.onload = function (e) {
-                          // get loaded data and render thumbnail:
-                          document.getElementById("output").src = e.target.result;
-                      };
-
-                      // read the image file as a data URL:
-                      reader.readAsDataURL(this.files[0]);
+			      fd.append("style", clickedStyle.value);
+                  var text = document.getElementById("image").src
+                  fd.append("content", text);
+                  var request = new XMLHttpRequest();
+                  request.open("POST", "/stylize");
+                  request.onload = function() {
+			          document.getElementById("output").src = request.responseText;
 			      };
-			      // We point the request at the appropriate command
-			      request.open("POST", "/stylize/" + command, true);
-			      // and then we send it off
-			      request.send();
+                  request.send(fd);
 			    });
 			  }
 			}, true);

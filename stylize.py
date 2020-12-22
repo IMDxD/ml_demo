@@ -1,11 +1,11 @@
 import logging
+from PIL import Image
+
 import torch
 from torch import nn
 from torchvision import transforms
-from PIL import Image
 
-from style_models import load_image, convert_from_tensor, load_model
-
+from style_models import load_image, convert_from_tensor, convert_to_bytes, load_model
 
 TO_TENSOR = transforms.Compose([
     transforms.Resize(512),
@@ -29,7 +29,7 @@ def stylize(content_image: Image, style_model: nn.Module) -> Image:
     return img
 
 
-def stylize_image(file, style: str) -> Image:
+def stylize_image(file, style: str) -> str:
 
     logger.info("Start to load image")
     content_image = load_image(file)
@@ -40,4 +40,4 @@ def stylize_image(file, style: str) -> Image:
     img = stylize(content_image, style_model)
     logger.info("Stylization is completed")
     img = img.resize(orig_size)
-    return img
+    return convert_to_bytes(img)

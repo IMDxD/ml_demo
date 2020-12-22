@@ -1,16 +1,24 @@
+import base64
+import io
 import re
 
 import torch
-from torch import nn
 from PIL import Image
+from torch import nn
 
 from .transformer_net import TransformerNet
 
 
-def load_image(filename: str) -> Image:
-    img = Image.open(filename)
+def load_image(file: str) -> Image:
+    img = Image.open(io.BytesIO(base64.b64decode(file)))
     img = img.convert('RGB')
     return img
+
+
+def convert_to_bytes(img: Image) -> str:
+    img_byte_arr = io.BytesIO()
+    img.save(img_byte_arr, format='JPEG')
+    return base64.b64encode(img_byte_arr.getbuffer()).decode()
 
 
 def convert_from_tensor(data: torch.Tensor) -> Image:
