@@ -1,8 +1,10 @@
+"""
+Web service main script
+"""
 import logging
 import os
-import tempfile
 
-from flask import Flask, render_template, request
+from flask import Flask, Response, make_response, render_template, request
 
 from stylize import stylize_image
 
@@ -19,25 +21,29 @@ if not os.path.exists(STYLE_MODEL_PATH):
     os.makedirs(STYLE_MODEL_PATH)
 
 
-def get_path(file_name):
-    return os.path.join(tempfile.gettempdir(), file_name)
-
-
 @app.route("/")
-def index():
+def index() -> None:
+    """
+    Main page of service
+    :return: rendered page
+    """
     return render_template("index.html")
 
 
 @app.route("/stylize", methods=["POST"])
-def stylize():
+def stylize() -> Response:
+    """
+    Data stylization route
+    :return: stylized image bytes as response
+    """
     style = request.values["style"]
     content = request.values["content"]
     content = content[content.index(",") + 1:]
-    logger.info(f"Got file and style {style}")
+    logger.info("Got file and style %s" % style)
     img_bytes = stylize_image(content, style)
     img_bytes = f"data:image/jpeg;base64,{img_bytes}"
-    logger.info(f"Result send back")
-    return img_bytes, 200
+    logger.info("Result send back")
+    return make_response(img_bytes, 200)
 
 
 if __name__ == "__main__":

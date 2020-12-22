@@ -1,8 +1,16 @@
+"""
+NN model and blocks
+"""
+
+import torch
 from torch import nn
 from torch.nn import functional
 
 
 class TransformerNet(nn.Module):
+    """
+    Model for style transfer
+    """
     def __init__(self):
         super(TransformerNet, self).__init__()
         # Initial convolution layers
@@ -27,7 +35,12 @@ class TransformerNet(nn.Module):
         # Non-linearities
         self.relu = nn.ReLU()
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Converting tensor by model
+        :param x: input tensor
+        :return: converted tensor
+        """
         y = self.relu(self.in1(self.conv1(x)))
         y = self.relu(self.in2(self.conv2(y)))
         y = self.relu(self.in3(self.conv3(y)))
@@ -43,6 +56,9 @@ class TransformerNet(nn.Module):
 
 
 class ConvLayer(nn.Module):
+    """
+    Convolutional block with reflection by padding
+    """
     def __init__(self, in_channels, out_channels, kernel_size, stride):
         super(ConvLayer, self).__init__()
         reflection_padding = kernel_size // 2
@@ -50,6 +66,11 @@ class ConvLayer(nn.Module):
         self.conv2d = nn.Conv2d(in_channels, out_channels, kernel_size, stride)
 
     def forward(self, x):
+        """
+        Converting tensor by block
+        :param x: input tensor
+        :return: converted tensor
+        """
         out = self.reflection_pad(x)
         out = self.conv2d(out)
         return out
@@ -70,6 +91,11 @@ class ResidualBlock(nn.Module):
         self.relu = nn.ReLU()
 
     def forward(self, x):
+        """
+        Converting tensor by block
+        :param x: input tensor
+        :return: converted tensor
+        """
         residual = x
         out = self.relu(self.in1(self.conv1(x)))
         out = self.in2(self.conv2(out))
@@ -92,6 +118,11 @@ class UpsampleConvLayer(nn.Module):
         self.conv2d = nn.Conv2d(in_channels, out_channels, kernel_size, stride)
 
     def forward(self, x):
+        """
+        Converting tensor by block
+        :param x: input tensor
+        :return: converted tensor
+        """
         x_in = x
         if self.upsample:
             x_in = functional.interpolate(x_in, mode='nearest', scale_factor=self.upsample)
