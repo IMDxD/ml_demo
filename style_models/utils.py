@@ -34,8 +34,7 @@ def load_model(style: str) -> nn.Module:
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     style_model = TransformerNet()
-    state_dict = torch.load(f'styles/{style}.pth')
-
+    state_dict = torch.load(f'styles/{style}.pth', map_location=device)
     for k in list(state_dict.keys()):
         if re.search(r'in\d+\.running_(mean|var)$', k):
             del state_dict[k]
